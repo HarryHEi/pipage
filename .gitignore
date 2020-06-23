@@ -1,0 +1,8 @@
+venv/*
+logs/*
+.idea/*
+*/migrations/*
+media/*
+html/*
+__pycache__
+db.sqlite3
