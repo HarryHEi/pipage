@@ -22,6 +22,22 @@ class BpgSection:
 
         self._do_init()
 
+    @staticmethod
+    def is_exists(book, index):
+        try:
+            section = Section.objects.get(
+                book=book,
+                index=index,
+            )
+        except Section.DoesNotExist:
+            return False
+
+        content = section.contents.first()
+        if content and content.body:
+            return True
+
+        return False
+
     def save(self, book, index):
         with atomic():
             section, _ = Section.objects.get_or_create(
@@ -67,8 +83,6 @@ class BpgBook:
         self.title = title
         self.home_url = home
 
-        self.sections = []
-
         self._do_init()
 
     def url_join(self, section_href):
@@ -104,6 +118,6 @@ class BpgBook:
                 for index, a_tag in tqdm(enumerate(a_tags)):
                     href = a_tag.get('href')
                     title = a_tag.text
-                    section = BpgSection(title, self.url_join(href))
-                    section.save(book, index + 1)
-                    self.sections.append(section)
+                    if not BpgSection.is_exists(book, index + 1):
+                        section = BpgSection(title, self.url_join(href))
+                        section.save(book, index + 1)
