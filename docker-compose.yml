@@ -18,7 +18,7 @@ services:
     build: .
     image: pipages
     volumes:
-      - .:/opt/pipage
+      - .:/opt/pipages
     depends_on:
       - redis
     restart: always
