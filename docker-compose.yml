@@ -16,9 +16,9 @@ services:
   # REST API
   rest:
     build: .
-    image: onealert
+    image: pipage
     volumes:
-      - .:/opt/onealert
+      - .:/opt/pipage
     depends_on:
       - redis
       - db
@@ -29,7 +29,7 @@ services:
       - daphne
       - -b
       - 0.0.0.0
-      - onealert.asgi:application
+      - pipage.asgi:application
   # redis
   redis:
     image: redis
