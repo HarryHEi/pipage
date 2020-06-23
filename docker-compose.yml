@@ -28,7 +28,7 @@ services:
       - daphne
       - -b
       - 0.0.0.0
-      - pipage.asgi:application
+      - pipages.asgi:application
   # redis
   redis:
     image: redis
