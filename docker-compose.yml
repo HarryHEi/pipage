@@ -21,7 +21,6 @@ services:
       - .:/opt/pipage
     depends_on:
       - redis
-      - db
     restart: always
     expose:
       - 8000
