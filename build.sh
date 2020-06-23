@@ -2,5 +2,5 @@
 
 # 创建镜像、启动服务。
 
-docker build -t pipage .
+docker build -t pipages .
 docker-compose up -d

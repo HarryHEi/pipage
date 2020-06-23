@@ -16,7 +16,7 @@ services:
   # REST API
   rest:
     build: .
-    image: pipage
+    image: pipages
     volumes:
       - .:/opt/pipage
     depends_on:
