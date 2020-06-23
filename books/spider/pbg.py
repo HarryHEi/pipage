@@ -1,3 +1,5 @@
+import time
+
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 from django.db.transaction import atomic
@@ -22,31 +24,41 @@ class BpgSection:
 
     def save(self, book, index):
         with atomic():
-            section = Section.objects.create(
+            section, _ = Section.objects.get_or_create(
                 book=book,
                 index=index,
                 title=self.title,
             )
-            Content.objects.create(
+            content, _ = Content.objects.get_or_create(
                 section=section,
-                body=self.content
-            )
-
-    def _do_init(self):
-        res = sync_get(self.url)
-
-        if res:
-            soup = BeautifulSoup(res.content, features='html.parser')
-            div_tags = soup.find_all(
-                name='div',
-                attrs={
-                    'id': 'content'
+                defaults={
+                    'body': self.content
                 }
             )
-            if div_tags:
-                text = div_tags[0].text
-                formatted_text = text.replace('\n\n', '').replace('\xa0\xa0\xa0\xa0', '\n').strip()
-                self.content = formatted_text
+            if content.body == '' and self.content:
+                content.body = self.content
+                content.save()
+
+    def _do_init(self):
+        for _ in range(5):
+            res = sync_get(self.url)
+
+            if res:
+                soup = BeautifulSoup(res.content, features='html.parser')
+                div_tags = soup.find_all(
+                    name='div',
+                    attrs={
+                        'id': 'content'
+                    }
+                )
+                if div_tags:
+                    text = div_tags[0].text
+                    formatted_text = text.replace('\n\n', '').replace('\xa0\xa0\xa0\xa0', '\n').strip()
+                    if formatted_text:
+                        self.content = formatted_text
+                        break
+                    else:
+                        time.sleep(1)
 
 
 class BpgBook:
